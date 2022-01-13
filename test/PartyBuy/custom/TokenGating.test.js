@@ -16,6 +16,7 @@ const {
 const { deployTestContractSetup, deploy, getTokenVault } = require('../helpers/deploy');
 const { FOURTY_EIGHT_HOURS_IN_SECONDS } = require('../helpers/constants');
 const { testCases } = require('../partyBuyTestCases.json');
+const { wethContract } = require('../../external/contracts');
 
 // indexes of test cases with one contribution per signer
 const compatibleTestCases = [2, 3, 4, 7];
@@ -37,7 +38,7 @@ describe('TokenGating', async () => {
         // GET RANDOM SIGNER & ARTIST
         [signer] = provider.getWallets();
 
-        gatedERC20 = weth
+        gatedERC20 = wethContract.connect(provider)
 
         // DEPLOY PARTY BID CONTRACT
         const contracts = await deployTestContractSetup(

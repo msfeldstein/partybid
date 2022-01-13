@@ -12,7 +12,7 @@ const {
 } = require('../helpers/constants');
 
 
-describe.only('Transfer WETH', async () => {
+describe('Transfer WETH', async () => {
     MARKETS.map((marketName) => {
         describe(marketName, async () => {
             // instantiate test vars

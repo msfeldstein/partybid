@@ -1,4 +1,4 @@
-const { weth } = require("../../external/contracts");
+const { wethContract } = require("../../external/contracts");
 
 async function deploy(name, args = []) {
     const Implementation = await ethers.getContractFactory(name);
@@ -48,7 +48,7 @@ async function deploy(name, args = []) {
     const factory = await deploy('PartyBuyFactory', [
       partyDAOMultisig.address,
       tokenVaultFactory.address,
-      weth.address,
+      wethContract.address,
       allowList.address
     ]);
   
@@ -75,7 +75,7 @@ async function deploy(name, args = []) {
       nftContract,
       partyBuy,
       partyDAOMultisig,
-      weth,
+      weth: wethContract.connect(provider),
       allowList,
       factory
     };

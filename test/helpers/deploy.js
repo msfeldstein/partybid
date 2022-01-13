@@ -6,7 +6,7 @@ const {
 } = require('./utils');
 const { MARKET_NAMES, FOURTY_EIGHT_HOURS_IN_SECONDS } = require('./constants');
 const { upgrades } = require('hardhat');
-const {foundation, weth: wethContract} = require('../external/contracts');
+const {foundationContract, wethContract, zoraContract} = require('../external/contracts');
 
 async function deploy(name, args = []) {
   const Implementation = await ethers.getContractFactory(name);
@@ -27,7 +27,7 @@ async function getTokenVault(party, signer) {
     reservePrice,
   ) {
     // Deploy Foundation treasury & NFT market
-    const foundationMarket = foundation.connect(artistSigner)
+    const foundationMarket = foundationContract.connect(artistSigner.provider)
 
     // Deploy Market Wrapper
     const marketWrapper = await deploy('FoundationMarketWrapper', [
@@ -60,15 +60,8 @@ async function getTokenVault(party, signer) {
     weth,
     reservePrice,
   ) {
-    // Deploy Zora Media / Market
-    const zoraMarket = await deploy('Market');
-    const zoraMedia = await deploy('Media', [zoraMarket.address]);
-
     // Deploy Zora Auction House
-    const zoraAuctionHouse = await deploy('AuctionHouse', [
-      zoraMedia.address,
-      weth.address,
-    ]);
+    const zoraAuctionHouse = zoraContract.connect(artistSigner.provider)
 
     // Deploy Market Wrapper
     const marketWrapper = await deploy('ZoraMarketWrapper', [
@@ -87,7 +80,12 @@ async function getTokenVault(party, signer) {
       eth(reservePrice),
     );
 
-    const auctionId = 0;
+    // Since we're forking from mainnet we need to get the logs for the auctionId that gets 
+    // created since its not always 0
+    const logs = await artistSigner.provider.getLogs({ address: zoraAuctionHouse.address });
+    // parse events from logs
+    const events = logs.map((log) => zoraAuctionHouse.interface.parseLog(log));
+    const auctionId = events[0].args.auctionId.toNumber()
 
     return {
       market: zoraAuctionHouse,
