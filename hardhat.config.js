@@ -80,7 +80,7 @@ module.exports = {
     hardhat: {
       forking: {
         blockNumber: 13993787,
-        url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_PROJECT_KEY}`
       }
     },
     localhost: {

@@ -1,3 +1,5 @@
+const { weth } = require("../../external/contracts");
+
 async function deploy(name, args = []) {
     const Implementation = await ethers.getContractFactory(name);
     const contract = await Implementation.deploy(...args);
@@ -22,9 +24,6 @@ async function deploy(name, args = []) {
     gatedToken = "0x0000000000000000000000000000000000000000",
     gatedTokenAmount = 0
   ) {
-    // Deploy WETH
-    const weth = await deploy('EtherToken');
-  
     // For other markets, deploy the test NFT Contract
     const nftContract = await deploy('TestERC721', []);
     // Mint token to artist

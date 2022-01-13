@@ -1,5 +1,5 @@
 const MARKET_NAMES = {
-  // ZORA: 'ZORA',
+  ZORA: 'ZORA',
   FOUNDATION: 'FOUNDATION',
   // NOUNS: 'NOUNS',
 };

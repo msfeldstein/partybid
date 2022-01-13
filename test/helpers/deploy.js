@@ -6,7 +6,7 @@ const {
 } = require('./utils');
 const { MARKET_NAMES, FOURTY_EIGHT_HOURS_IN_SECONDS } = require('./constants');
 const { upgrades } = require('hardhat');
-const deployedFoundationMarket = require('../external/foundation');
+const {foundation, weth} = require('../external/contracts');
 
 async function deploy(name, args = []) {
   const Implementation = await ethers.getContractFactory(name);
@@ -27,7 +27,7 @@ async function getTokenVault(party, signer) {
     reservePrice,
   ) {
     // Deploy Foundation treasury & NFT market
-    const foundationMarket = deployedFoundationMarket(artistSigner)
+    const foundationMarket = foundation.connect(artistSigner)
 
     // Deploy Market Wrapper
     const marketWrapper = await deploy('FoundationMarketWrapper', [
@@ -96,25 +96,6 @@ async function getTokenVault(party, signer) {
     };
   }
 
-  async function deployNounsToken(tokenId) {
-    // Deploy the Nouns mock NFT descriptor
-    const nounsDescriptor = await deploy('NounsMockDescriptor', []);
-
-    // Deploy the Nouns mock seed generator
-    const nounsSeeder = await deploy('NounsMockSeeder', []);
-
-    // Deploy the Nouns NFT Contract. Note that the Nouns
-    // Auction House is responsible for token minting
-    return deploy('NounsToken', [
-      ethers.constants.AddressZero,
-      ethers.constants.AddressZero,
-      nounsDescriptor.address,
-      nounsSeeder.address,
-      ethers.constants.AddressZero,
-      tokenId,
-    ]);
-  }
-
   async function deployNounsAndStartAuction(
     nftContract,
     tokenId,
@@ -174,22 +155,15 @@ async function getTokenVault(party, signer) {
     gatedToken = "0x0000000000000000000000000000000000000000",
     gatedTokenAmount = 0
   ) {
+    console.log("Deploy weth start")
     // Deploy WETH
-    const weth = await deploy('EtherToken');
-
-    // Nouns uses a custom ERC721 contract. Note that the Nouns
-    // Auction House is responsible for token minting
-    let nftContract;
-    if (marketName == MARKET_NAMES.NOUNS) {
-      // for Nouns, deploy custom Nouns NFT contract
-      nftContract = await deployNounsToken(tokenId);
-    } else {
-      // For other markets, deploy the test NFT Contract
-      nftContract = await deploy('TestERC721', []);
-
-      // Mint token to artist
-      await nftContract.mint(artistSigner.address, tokenId);
-    }
+    // const weth = weth
+    console.log("Depoy testerc start")
+    // Deploy the test nft contract
+    let nftContract = await deploy('TestERC721', []);
+    console.log("Mint")
+    // Mint token to artist
+    await nftContract.mint(artistSigner.address, tokenId);
 
     // Deploy Market and Market Wrapper Contract + Start Auction
     let marketContracts;

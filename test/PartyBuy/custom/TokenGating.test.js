@@ -37,7 +37,7 @@ describe('TokenGating', async () => {
         // GET RANDOM SIGNER & ARTIST
         [signer] = provider.getWallets();
 
-        gatedERC20 = await deploy('EtherToken');
+        gatedERC20 = weth
 
         // DEPLOY PARTY BID CONTRACT
         const contracts = await deployTestContractSetup(
