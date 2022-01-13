@@ -6,6 +6,7 @@ const {
 } = require('./utils');
 const { MARKET_NAMES, FOURTY_EIGHT_HOURS_IN_SECONDS } = require('./constants');
 const { upgrades } = require('hardhat');
+const deployedFoundationMarket = require('../external/foundation');
 
 async function deploy(name, args = []) {
   const Implementation = await ethers.getContractFactory(name);
@@ -26,12 +27,7 @@ async function getTokenVault(party, signer) {
     reservePrice,
   ) {
     // Deploy Foundation treasury & NFT market
-    const foundationTreasury = await deploy('MockFoundationTreasury');
-    const foundationMarket = await deploy('FNDNFTMarket');
-
-    // initialize / configure Foundation market
-    await foundationMarket.initialize(foundationTreasury.address);
-    await foundationMarket.adminUpdateConfig(1000, 86400, 0, 0, 0);
+    const foundationMarket = deployedFoundationMarket(artistSigner)
 
     // Deploy Market Wrapper
     const marketWrapper = await deploy('FoundationMarketWrapper', [
@@ -49,12 +45,11 @@ async function getTokenVault(party, signer) {
       tokenId,
       eth(reservePrice),
     );
-    const auctionId = 1;
-
+    const auctionId = await foundationMarket.connect(artistSigner).getReserveAuctionIdFor(nftContract.address, tokenId);
     return {
       market: foundationMarket,
       marketWrapper,
-      auctionId,
+      auctionId: auctionId.toNumber(),
     };
   }
 

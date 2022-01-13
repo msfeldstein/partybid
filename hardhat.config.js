@@ -77,7 +77,12 @@ module.exports = {
   },
 
   networks: {
-    hardhat: {},
+    hardhat: {
+      forking: {
+        blockNumber: 13993787,
+        url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+      }
+    },
     localhost: {
       url: 'http://localhost:8545',
     },
