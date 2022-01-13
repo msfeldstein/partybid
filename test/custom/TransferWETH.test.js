@@ -11,7 +11,8 @@ const {
     MARKETS, FOURTY_EIGHT_HOURS_IN_SECONDS,
 } = require('../helpers/constants');
 
-describe('Transfer WETH', async () => {
+
+describe.only('Transfer WETH', async () => {
     MARKETS.map((marketName) => {
         describe(marketName, async () => {
             // instantiate test vars

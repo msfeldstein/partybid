@@ -6,7 +6,7 @@ const {
 } = require('./utils');
 const { MARKET_NAMES, FOURTY_EIGHT_HOURS_IN_SECONDS } = require('./constants');
 const { upgrades } = require('hardhat');
-const {foundation, weth} = require('../external/contracts');
+const {foundation, weth: wethContract} = require('../external/contracts');
 
 async function deploy(name, args = []) {
   const Implementation = await ethers.getContractFactory(name);
@@ -155,13 +155,11 @@ async function getTokenVault(party, signer) {
     gatedToken = "0x0000000000000000000000000000000000000000",
     gatedTokenAmount = 0
   ) {
-    console.log("Deploy weth start")
     // Deploy WETH
     // const weth = weth
-    console.log("Depoy testerc start")
+    const weth = wethContract.connect(provider)
     // Deploy the test nft contract
     let nftContract = await deploy('TestERC721', []);
-    console.log("Mint")
     // Mint token to artist
     await nftContract.mint(artistSigner.address, tokenId);
 
